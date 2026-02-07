@@ -105,9 +105,6 @@ class TestBeerConsumer:
         call_args = mock_post.call_args
         payload = call_args[1]["json"]
 
-        # Due to a bug in the requeue library's recal_amount implementation,
-        # the conversion uses the RUB rate (1) instead of the USD rate (80)
-        # So 100 USD becomes 100 RUB instead of 8000 RUB
         assert payload["value"] == 100
 
     @pytest.mark.asyncio

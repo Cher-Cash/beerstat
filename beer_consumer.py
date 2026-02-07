@@ -24,9 +24,6 @@ class BeerConsumer:
             message.finish()
             return message
 
-        if message.data.currency != "RUB":
-            message.data.recal_amount(currencies=settings.currencies)
-
         stat_data = self._from_queue_event_to_bs(message.data)
 
         payload = {
