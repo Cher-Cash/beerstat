@@ -1,4 +1,5 @@
 instance/
+__pycache__
 .venv
 .idea/
 *.db
