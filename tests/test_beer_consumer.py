@@ -15,9 +15,7 @@ from beer_consumer import (
 class TestFromQueueEventToBs:
     def test_converts_amount_to_int(self) -> None:
         consumer = BeerConsumer(donate_url="http://example.com/donate")
-        event = QueueEvent(
-            event_type="DONATION", user_name="test_user", amount=100.5
-        )
+        event = QueueEvent(event_type="DONATION", user_name="test_user", amount=100.5)
         result = consumer._from_queue_event_to_bs(event)
         assert result == {"value": 100, "name": "test_user"}
 
@@ -91,9 +89,7 @@ class TestOnMessage:
     @pytest.mark.asyncio
     async def test_posts_to_donate_url_on_valid_donation(self) -> None:
         consumer = BeerConsumer(donate_url="http://example.com/donate")
-        event = QueueEvent(
-            event_type="DONATION", user_name="Cher_cash", amount=100.5
-        )
+        event = QueueEvent(event_type="DONATION", user_name="Cher_cash", amount=100.5)
         message = QueueMessage(event="test_event", data=event)
 
         mock_response = self._make_mock_post_response()
@@ -155,9 +151,7 @@ class StubWorker:
 class TestProcessMessage:
     @pytest.mark.asyncio
     async def test_acks_on_success(self) -> None:
-        message = QueueMessage(
-            event="DONATION", data=QueueEvent(event_type="DONATION")
-        )
+        message = QueueMessage(event="DONATION", data=QueueEvent(event_type="DONATION"))
         worker = StubWorker()
         msg = Mock()
         msg.ack = AsyncMock()
@@ -171,9 +165,7 @@ class TestProcessMessage:
 
     @pytest.mark.asyncio
     async def test_rejects_on_worker_error(self) -> None:
-        message = QueueMessage(
-            event="DONATION", data=QueueEvent(event_type="DONATION")
-        )
+        message = QueueMessage(event="DONATION", data=QueueEvent(event_type="DONATION"))
         worker = StubWorker(error=RuntimeError("boom"))
         msg = Mock()
         msg.ack = AsyncMock()

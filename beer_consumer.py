@@ -57,9 +57,7 @@ class BeerConsumer:
                 response.raise_for_status()
                 await response.json()
 
-    def _from_queue_event_to_bs(
-        self, event: QueueEvent
-    ) -> dict[str, int | str | None]:
+    def _from_queue_event_to_bs(self, event: QueueEvent) -> dict[str, int | str | None]:
         message: dict[str, int | str | None] = {
             "value": round(event.amount) if event.amount else 0,
             "name": event.user_name,
