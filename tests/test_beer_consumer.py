@@ -120,9 +120,11 @@ class TestOnMessage:
         )
         mock_session = self._make_mock_session(mock_response)
 
-        with patch("aiohttp.ClientSession", return_value=mock_session):
-            with pytest.raises(aiohttp.ClientResponseError):
-                await consumer.on_message(message)
+        with (
+            patch("aiohttp.ClientSession", return_value=mock_session),
+            pytest.raises(aiohttp.ClientResponseError),
+        ):
+            await consumer.on_message(message)
 
         mock_session.post.assert_called_once()
 

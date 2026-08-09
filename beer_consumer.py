@@ -5,7 +5,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 import aiohttp
-from faststream import FastStream, AckPolicy
+from faststream import AckPolicy, FastStream
 from faststream.rabbit import RabbitBroker, RabbitQueue
 from faststream.rabbit.annotations import RabbitMessage
 from pydantic import BaseModel
@@ -43,19 +43,19 @@ class BeerConsumer:
         stat_data = self._from_queue_event_to_bs(message.data)
 
         payload = {
-            "date": datetime.datetime.now().isoformat(),
+            "date": datetime.datetime.now(datetime.UTC).isoformat(),
             "value": stat_data.get("value", 0),
             "name": stat_data.get("name", ""),
         }
         headers = {
             "Content-Type": "application/json",
         }
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                self.donate_url, json=payload, headers=headers
-            ) as response:
-                response.raise_for_status()
-                await response.json()
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(self.donate_url, json=payload, headers=headers) as response,
+        ):
+            response.raise_for_status()
+            await response.json()
 
     def _from_queue_event_to_bs(self, event: QueueEvent) -> dict[str, int | str | None]:
         message: dict[str, int | str | None] = {
@@ -72,8 +72,8 @@ async def process_message(
 ) -> None:
     try:
         await on_message(message)
-    except Exception as e:
-        logger.exception("worker function failed with error %s", e)
+    except Exception:
+        logger.exception("worker function failed")
         await msg.reject()
     else:
         await msg.ack()
